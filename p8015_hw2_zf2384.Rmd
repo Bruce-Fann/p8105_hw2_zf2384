@@ -13,7 +13,7 @@ library(tidyverse)
 ## Problem 1
 Clean pols-month
 ```{r clean_pols}
-pols_df = read_csv("data/pols-month.csv") |>
+pols_df = read_csv("./data/pols-month.csv") |>
   # separate mon into year, month, day
   separate(mon, into = c("year", "month", "day"), sep = "-") |>
   mutate(
@@ -36,7 +36,7 @@ head(pols_df)
  
 Clean snp
 ```{r clean_snp}
-snp_df = read_csv("data/snp.csv") |>
+snp_df = read_csv("./data/snp.csv") |>
   separate(date, into = c("month", "day", "year"), sep = "/") |>
   mutate(
     year = as.integer(year),
@@ -52,4 +52,20 @@ head(snp_df)
 
 ```
 
+clean unemploy
+```{r clean unemploy}
+unemp_df = read_csv("data/unemployment.csv") |>
+  pivot_longer(
+    Jan:Dec,
+    names_to = "month",
+    values_to = "unemp_rate"
+  ) |>
+  mutate(
+    month = match(month, month.abb),  # convert "Jan" → 1, etc
+    month = month.name[month]
+  ) |>
+  rename(year = Year)
+head(unemp_df)
+
+```
 

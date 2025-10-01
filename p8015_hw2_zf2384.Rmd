@@ -96,25 +96,66 @@ mr_trash = read_excel(
   path = q2_path,
   sheet = sheet_mr_trash,)|>
   janitor::clean_names()|>
-  select(month:homes_powered)|>
+  select(dumpster:homes_powered)|>
    mutate(
-    sports_balls = as.integer(round(sports_balls)))
+    sports_balls = as.integer(round(sports_balls)))|>
+      mutate(wheel_name = "mr_trash")|>
+  mutate(year = as.numeric(year))
+    
+                    
 ```
 
-clean professor trash
+clean professor trash and gwynnda
 
 ```{r professor_trash}
 sheet_prof_trash <- "Professor Trash Wheel"
 
-# Read the specified sheet, cleaning
+sheet_gwynns <- "Gwynns Falls Trash Wheel"
+
+# Read the professor trash and gwynnda sheet, cleaning
 prof_trash = read_excel(
   path = q2_path,
   sheet = sheet_prof_trash)|>
-  janitor::clean_names()
- 
+  janitor::clean_names() |>
+   mutate(wheel_name = "prof_trash")
+
+gwynns_trash = read_excel(
+  path = q2_path,
+  sheet = sheet_gwynns)|>
+  janitor::clean_names() |>
+   mutate(wheel_name = "gwynns_trash")
+
 ```
 
+merge the sheets
+```{r}
+all_trash_data = bind_rows(mr_trash , prof_trash , gwynns_trash) 
 
+total_obs <- nrow(all_trash_data)
+
+# calculate total weight of professor trash wheel
+prof_total_weight = all_trash_data |>
+  filter(wheel_name == "prof_trash") |>
+  summarise(total_weight = sum(weight_tons, na.rm = TRUE)) |>
+  pull(total_weight)
+
+# total number of cigarette butts collected by Gwynnda in June of 2022
+gwynnda_cigs_june22 = all_trash_data |>
+  filter(
+    wheel_name == "gwynns_trash",
+    year == 2022,
+    month == "June"
+  ) |>
+  summarise(total_cigs = sum(cigarette_butts, na.rm = TRUE)) %>%
+  pull(total_cigs)
+
+```
+
+  The combined data set contains observations from three different trash wheels in Baltimore, totaling 1191 collections. Key variables in this neat data set include wheel_name,which identifies the specific wheel, and a series of quantitative metrics such as weight_tons (tons of trash), plastic_bottles (number of plastic bottles), polystyrene (number of Styrofoam pieces), and cigarette_butts (number of cigarette butts). 
+
+  Based on available data, the total weight of trash collected by the "Professor Trash Wheel" during its operation is approximately 564.52 tons. For a more specific question, the total number of cigarette butts collected by the Gwynns Falls trash wheel (Gwynnda) during June 2022 is 18120. 
+  
+## Problem 3
 
 
 

@@ -53,7 +53,7 @@ head(snp_df)
 ```
 
 clean unemploy
-```{r clean unemploy}
+```{r clean_unemploy}
 unemp_df = read_csv("./data/unemployment.csv") |>
   pivot_longer(
     Jan:Dec,
@@ -83,7 +83,44 @@ The pols-month data set (822 observations, 1947–2015) records counts of govern
 
 ## Problem 2
 
-```{r}
+clean mr trash
+```{r mr_trash}
+library(readxl)
 
+q2_path <- "data/202509 Trash Wheel Collection Data.xlsx"
+
+sheet_mr_trash <- "Mr. Trash Wheel"
+
+# Read the specified sheet, cleaning
+mr_trash = read_excel(
+  path = q2_path,
+  sheet = sheet_mr_trash,)|>
+  janitor::clean_names()|>
+  select(month:homes_powered)|>
+   mutate(
+    sports_balls = as.integer(round(sports_balls)))
 ```
+
+clean professor trash
+
+```{r professor_trash}
+sheet_prof_trash <- "Professor Trash Wheel"
+
+# Read the specified sheet, cleaning
+prof_trash = read_excel(
+  path = q2_path,
+  sheet = sheet_prof_trash)|>
+  janitor::clean_names()
+ 
+```
+
+
+
+
+
+
+
+
+
+
 

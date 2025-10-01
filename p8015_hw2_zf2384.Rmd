@@ -1,0 +1,38 @@
+---
+title: "p8105_hw2_zf2384"
+author: "Zichen Fan"
+date: "2025-10-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+library(tidyverse)
+```
+
+## Problem 1
+Clean pols-month data
+```{r clean_pols}
+pols_df = read_csv("data/pols-month.csv") |>
+  # separate mon into year, month, day
+  separate(mon, into = c("year", "month", "day"), sep = "-") |>
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    # replace month number with month name
+    month = month.name[month],
+    # create president variable
+    president = case_when(
+      prez_gop == 1 ~ "gop",
+      prez_dem == 1 ~ "dem"
+    )
+  ) |>
+  # drop day, prez_gop, prez_dem
+  select(-day, -prez_gop, -prez_dem)
+
+head(pols_df)
+
+```
+ 
+
+

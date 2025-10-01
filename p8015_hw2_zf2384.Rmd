@@ -11,7 +11,7 @@ library(tidyverse)
 ```
 
 ## Problem 1
-Clean pols-month data
+Clean pols-month
 ```{r clean_pols}
 pols_df = read_csv("data/pols-month.csv") |>
   # separate mon into year, month, day
@@ -34,5 +34,22 @@ head(pols_df)
 
 ```
  
+Clean snp
+```{r clean_snp}
+snp_df = read_csv("data/snp.csv") |>
+  separate(date, into = c("month", "day", "year"), sep = "/") |>
+  mutate(
+    year = as.integer(year),
+    # adjust year if given in 2-digit format
+    year = ifelse(year > 50, 1900 + year, 2000 + year),
+    month = as.integer(month),
+    month = month.name[month]
+  ) |>
+  select(year, month, close) |>
+  arrange(year, month)
+
+head(snp_df)
+
+```
 
 

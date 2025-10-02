@@ -128,7 +128,7 @@ gwynns_trash = read_excel(
 ```
 
 merge the sheets
-```{r}
+```{r q2_merge}
 all_trash_data = bind_rows(mr_trash , prof_trash , gwynns_trash) 
 
 total_obs <- nrow(all_trash_data)
@@ -156,6 +156,34 @@ gwynnda_cigs_june22 = all_trash_data |>
   Based on available data, the total weight of trash collected by the "Professor Trash Wheel" during its operation is approximately 564.52 tons. For a more specific question, the total number of cigarette butts collected by the Gwynns Falls trash wheel (Gwynnda) during June 2022 is 18120. 
   
 ## Problem 3
+
+```{r q3_import}
+
+zip_df = read_csv("./data/Zip Codes.csv") |>
+  janitor::clean_names()     
+
+zori_df = read_csv("./data/Zip_zori_uc_sfrcondomfr_sm_month_NYC.csv")|>
+   janitor::clean_names()  |>
+  
+  ## make zip code column name consistent with zip_df
+  rename(zip_code = region_name ) |>
+  
+  ## pivot the date information into rows because i prefer this
+  pivot_longer(
+    cols = matches("^x\\d{4}_\\d{2}_\\d{2}"), 
+    names_to = "date",                   
+    values_to = "zori"  ) |>
+  ## edit the date format
+ mutate(
+   date = ymd(str_remove(date, "^x"))
+       )
+
+
+
+
+
+ 
+```
 
 
 

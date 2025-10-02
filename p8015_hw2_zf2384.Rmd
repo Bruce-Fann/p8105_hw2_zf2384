@@ -79,7 +79,10 @@ merged_df
 
 ```
 
-The pols-month data set (822 observations, 1947–2015) records counts of governors, senators, and representatives by party, plus the president’s party. The snp data set (787 observations, 1950s–2050) provides monthly closing values of the S&P stock index. The unemployment data set (816 observations, 1948–2015) contains monthly unemployment rates. After cleaning and merging, the combined data set has 822 monthly observations spanning 1947–2015, with key variables including party composition (gov_gop, sen_dem, rep_dem), president’s party, stock index values (close), and unemployment rates (unemp_rate).
+  The pols-month data set (822 observations, 1947–2015) records counts of governors,
+senators, and representatives by party, plus the president’s party.The snp data set (787 observations, 1950s–2050) provides monthly closing values of the S&P stock index.
+
+  The unemployment data set (816 observations, 1948–2015) contains monthly unemployment rates. After cleaning and merging, the combined data set has 822 monthly observations spanning 1947–2015, with key variables including party composition (gov_gop, sen_dem, rep_dem), president’s party, stock index values (close), and unemployment rates (unemp_rate).
 
 ## Problem 2
 
@@ -157,10 +160,12 @@ gwynnda_cigs_june22 = all_trash_data |>
   
 ## Problem 3
 
+Import and wrangle
 ```{r q3_import}
 
 zip_df = read_csv("./data/Zip Codes.csv") |>
-  janitor::clean_names()     
+  janitor::clean_names()  |>
+  rename(borough = county)
 
 zori_df = read_csv("./data/Zip_zori_uc_sfrcondomfr_sm_month_NYC.csv")|>
    janitor::clean_names()  |>
@@ -177,19 +182,76 @@ zori_df = read_csv("./data/Zip_zori_uc_sfrcondomfr_sm_month_NYC.csv")|>
  mutate(
    date = ymd(str_remove(date, "^x"))
        )
-
-
-
-
-
- 
 ```
 
+Merge zip code file with neighborhood and borough with ZORI file
+
+```{r q3_merge}
+
+final_df = zori_df |>
+  left_join(zip_df, by = "zip_code")|>
+  
+  ## select key column for this problem and rearrange row order
+select(date, city, borough, county_name, zip_code, neighborhood, zori) |>
+  arrange(city, county_name, borough, zip_code,date)
+
+```
+
+Check observations
+```{r q3_check}
+
+n_obs = nrow(final_df)
+n_zip = n_distinct(pull(final_df, zip_code))
+n_neigh = n_distinct(pull(final_df, neighborhood))
+
+n_obs
+n_zip
+n_neigh
+
+```
+
+The result data set only select date, city, borough, county name, zip code 
+and ZORI as key information for analysis. It include 17516 observations of 
+rent index in total, covering 43 neighborhood and 149 unique zip code.
+
+```{r missing_zip}
+
+## unique zip code
+zillow_zips_vector = unique(pull(final_df, zip_code))
+
+## see what's missing
+missing_zips = zip_df |>
+  filter(!zip_code %in% zillow_zips_vector)|>
+  pull(zip_code)
+
+print(missing_zips)
+```
+
+We are missing 171 zip code in the final mergeg data frame.
+This could be due to some ZIP codes appear in the ZIP dataset but not in Zillow rental data. 
+These are often non-residential or sparsely populated areas (e.g., primarily commercial
+or institutional areas like airports or campuses). 
+Zillow does not provide rental indices for these places because there is little to no residential rental market.
 
 
+```{r covid}
+zori_change = final_df |>
+  filter(month(date) %in% c(1), year(date) %in% c(2020, 2021)) |>
+  mutate(year = year(date)) |>
+  select(zip_code, borough, neighborhood, year, zori) |>
+  pivot_wider(names_from = year, values_from = zori, names_prefix = "zori_") |>
+  mutate(diff = zori_2021 - zori_2020) |>
+  arrange(diff) |>
+  slice(1:10)
 
+print(zori_change)
 
+```
 
+These results show that the steepest rent declines between January 2020 
+and January 2021 were concentrated in Newyork borough, or mahatten.
+ssuch as Lower Manhattan, the Lower East Side, Chelsea, and Gramercy/Soho.
+Drops of $700–900 per month reflect the sharp impact of the COVID-19 pandemic on demand in dense, high-rent areas, where many residents moved out or sought cheaper housing elsewhere.
 
 
 

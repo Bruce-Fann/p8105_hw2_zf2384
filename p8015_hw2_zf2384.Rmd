@@ -227,7 +227,7 @@ missing_zips = zip_df |>
 print(missing_zips)
 ```
 
-We are missing 171 zip code in the final mergeg data frame.
+We are missing 171 zip code listed above in the final merged data frame.
 This could be due to some ZIP codes appear in the ZIP dataset but not in Zillow rental data. 
 These are often non-residential or sparsely populated areas (e.g., primarily commercial
 or institutional areas like airports or campuses). 
@@ -249,7 +249,7 @@ print(zori_change)
 ```
 
 These results show that the steepest rent declines between January 2020 
-and January 2021 were concentrated in Newyork borough, or mahatten.
+and January 2021 were concentrated in New york borough, or manhattan.
 ssuch as Lower Manhattan, the Lower East Side, Chelsea, and Gramercy/Soho.
 Drops of $700–900 per month reflect the sharp impact of the COVID-19 pandemic on demand in dense, high-rent areas, where many residents moved out or sought cheaper housing elsewhere.
 
